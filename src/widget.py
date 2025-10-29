@@ -41,3 +41,11 @@ def mask_account_card(data_string: str) -> str:
     else:
         masked_number = mask_card(number_str)
         return f"{card_type} {masked_number}"
+
+
+def get_date(date_string: str) -> str:
+    """Функция, которая принимает дату в виде строки с лишними элементами
+    и возвращает дату в виде строки в нужном формате"""
+    date_part = date_string.split("T")[0]
+    year, month, day = date_part.split("-")
+    return f'"{day}.{month}.{year}"'
