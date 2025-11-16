@@ -1,5 +1,5 @@
 import pytest
-from src.masks import get_mask_card_number
+from src.masks import get_mask_card_number, get_mask_account
 from typing import Union, Any
 
 
@@ -50,15 +50,51 @@ def test_invalid_input_handling(invalid_input: Any, expected_return: str) -> Non
     assert get_mask_card_number(invalid_input) == expected_return
 
 
-def test_get_mask_card_number_valid_string():
+def test_get_mask_card_number_valid_string() -> None:
     """Тестирование корректного маскирования номера карты в формате строки."""
     card_number = "1234567890123456"
     expected_result = "1234 56** **** 3456"
     assert get_mask_card_number(card_number) == expected_result
 
 
-def test_get_mask_card_number_valid_integer():
+def test_get_mask_card_number_valid_integer() -> None:
     """Тестирование корректного маскирования номера карты в формате целого числа."""
     card_number = 1234567890123456
     expected_result = "1234 56** **** 3456"
     assert get_mask_card_number(card_number) == expected_result
+
+
+@pytest.fixture
+def valid_account_number() -> str:
+    """Фикстура, предоставляющая валидный номер счета."""
+    return "12345678901234567890"
+
+
+@pytest.fixture
+def short_account_number() -> str:
+    """Фикстура для короткого номера (пограничный случай)."""
+    return "12345"
+
+
+@pytest.mark.parametrize(
+    "input_account, expected_output",
+    [
+        # Стандартный 20-значный счет
+        ("12345678901234567890", "**7890"),
+        # Счет другой длины (например, 15 знаков)
+        ("987654321098765", "**8765"),
+        # Короткий счет (пограничный случай)
+        ("12345", "**2345"),
+        # Счет с минимально допустимой длиной 4 цифры
+        ("1234", "**1234"),
+    ],
+)
+def test_get_mask_account_parametrized_valid(input_account: str, expected_output: str) -> None:
+    """Параметризованный тест для проверки корректного маскирования."""
+    assert get_mask_account(input_account) == expected_output
+
+
+def test_get_mask_account_with_fixture(valid_account_number: str) -> None:
+    """Тест, использующий фикстуру для проверки корректного маскирования."""
+    expected_result = "**7890"
+    assert get_mask_account(valid_account_number) == expected_result
