@@ -9,13 +9,11 @@ def filter_by_state(list_of_dicts: list, state_value: str = "EXECUTED") -> list:
 
 
 def sort_by_date(operations: list, descending: bool = True) -> list:
-    """
-    Сортирует список словарей по дате, используя несколько строк кода.
-    """
+    """Функция сортирует список словарей по дате, используя несколько строк кода."""
     sorted_operations = operations.copy()
 
     def get_date_key(item_dict: dict) -> str:
-        return item_dict["date"]
+        return str(item_dict.get("date", ""))
 
     sorted_operations.sort(key=get_date_key, reverse=descending)
     return sorted_operations
