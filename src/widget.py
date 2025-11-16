@@ -24,6 +24,8 @@ def mask_account(account_number_str: str) -> str:
 
 def mask_account_card(data_string: str) -> str:
     """Функция принимает строку, определяет тип (карта или счет) и маскирует номер"""
+    if not isinstance(data_string, str):
+        return "Неверный формат: входные данные не являются строкой"
     first_digit_index = -1
     for i, char in enumerate(data_string):
         if char.isdigit():
