@@ -1,6 +1,7 @@
 import pytest
+
 from src.processing import filter_by_state, sort_by_date
-from typing import Any
+
 
 @pytest.fixture
 def sample_data() -> list[dict]:
@@ -19,9 +20,11 @@ def sample_data() -> list[dict]:
     [
         ("EXECUTED", 2, [1, 3]),
         ("CANCELED", 2, [2, 4]),
-    ]
+    ],
 )
-def test_filter_by_state_valid(sample_data: list[dict], state_filter: str, expected_count: int, expected_ids: list[int]) -> None:
+def test_filter_by_state_valid(
+    sample_data: list[dict], state_filter: str, expected_count: int, expected_ids: list[int]
+) -> None:
     """Проверка корректности фильтрации для существующих статусов с использованием параметризации."""
     result = filter_by_state(sample_data, state_filter)
 
@@ -29,12 +32,12 @@ def test_filter_by_state_valid(sample_data: list[dict], state_filter: str, expec
     assert len(result) == expected_count
 
     # Проверка, что в результате только ожидаемые ID
-    result_ids = [item['id'] for item in result]
+    result_ids = [item["id"] for item in result]
     assert result_ids == expected_ids
 
     # Дополнительная проверка, что все элементы в результате имеют правильный state
     for item in result:
-        assert item['state'] == state_filter
+        assert item["state"] == state_filter
 
 
 def test_filter_by_state_not_found(sample_data: list[dict]) -> None:
@@ -60,7 +63,7 @@ def sample_operations() -> list[dict]:
     return [
         {"id": 1, "date": "2023-01-15T10:00:00Z"},
         {"id": 2, "date": "2023-01-10T12:00:00Z"},
-        {"id": 3, "date": "2023-01-15T11:00:00Z"}, # Одинаковая дата, разное время
+        {"id": 3, "date": "2023-01-15T11:00:00Z"},
         {"id": 4, "date": "2022-12-01T09:00:00Z"},
     ]
 
@@ -70,19 +73,19 @@ def sample_operations() -> list[dict]:
     [
         # Добавляем второй элемент (список ID) в кортеж
         (True, [3, 1, 2, 4]),
-
         # Добавляем второй элемент (список ID) в кортеж
         (False, [4, 2, 1, 3]),
-    ]
+    ],
 )
-def test_sort_by_date_order(sample_operations: list[dict], descending_flag: bool,
-                            expected_order_ids: list[int]) -> None:
+def test_sort_by_date_order(
+    sample_operations: list[dict], descending_flag: bool, expected_order_ids: list[int]
+) -> None:
     """Тестирование сортировки списка словарей по датам в порядке убывания и возрастания
     с использованием параметризации."""
     result = sort_by_date(sample_operations, descending=descending_flag)
 
     # Извлекаем ID из отсортированного списка для сравнения с ожидаемым порядком
-    result_ids = [op['id'] for op in result]
+    result_ids = [op["id"] for op in result]
 
     assert result_ids == expected_order_ids
 
@@ -103,6 +106,7 @@ def operations_with_missing_date_key() -> list[dict]:
         {"id": 3, "date": "2022-12-01T09:00:00Z"},
     ]
 
+
 def test_sort_by_date_missing_key_behavior(operations_with_missing_date_key: list[dict]) -> None:
     """Тестирование обработки отсутствия ключа 'date'.
     Элементы без даты должны попасть в конец при убывающей сортировке,
@@ -110,8 +114,8 @@ def test_sort_by_date_missing_key_behavior(operations_with_missing_date_key: lis
     result_desc = sort_by_date(operations_with_missing_date_key, descending=True)
 
     # ID 5 должен быть последним, т.к. пустая строка "" меньше, чем любая строка с датой
-    assert result_desc[-1]['id'] == 5
+    assert result_desc[-1]["id"] == 5
 
     result_asc = sort_by_date(operations_with_missing_date_key, descending=False)
     # ID 5 должен быть первым при возрастающей сортировке
-    assert result_asc[0]['id'] == 5  # Используем [0] вместо [-1]
+    assert result_asc[0]["id"] == 5  # Используем [0] вместо [-1]
