@@ -1,8 +1,10 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Iterator
+
+from _pytest.fixtures import FixtureRequest
 
 import pytest
 
-from src.generators import filter_by_currency
+from src.generators import filter_by_currency, transaction_descriptions, card_number_generator
 
 
 @pytest.fixture
@@ -34,6 +36,12 @@ def sample_transactions() -> List[Dict[str, Any]]:
             "operationAmount": {"amount": "100.00", "currency": {"code": "RUB"}},
         },
     ]
+
+
+@pytest.fixture
+def empty_transactions() -> List[Dict[str, Any]]:
+    """Фикстура, предоставляющая пустой список транзакций."""
+    return []
 
 
 def test_filter_correct_currency(sample_transactions: List[Dict[str, Any]]) -> None:
@@ -116,3 +124,40 @@ def test_filter_by_currency_parametrized(
     # Проверяем, что ID транзакций соответствуют ожидаемым
     found_ids = [t["id"] for t in result_list]
     assert found_ids == expected_ids
+
+
+@pytest.mark.parametrize(
+    "transaction_list_fixture, expected_descriptions",
+    [
+        (
+            "sample_transactions",
+            # ИСПРАВЛЕНО: Эти описания соответствуют фикстуре выше:
+            [
+                "USD transaction 1",
+                "RUB transaction",
+                "USD transaction 2",
+                "Transaction without currency info",
+                "Another RUB transaction"
+            ],
+        ),
+        ("empty_transactions", []),
+    ],
+)
+def test_transaction_descriptions_parametrized(request: FixtureRequest,
+                                               transaction_list_fixture: str,
+                                               expected_descriptions: list[str]) -> None:
+    """Тестирует функцию transaction_descriptions, используя параметризацию
+    для разных наборов входных данных (обычный и пустой список)."""
+    # Активируем нужную фикстуру по её строковому имени с помощью request.getfixturevalue
+    transactions: List[Dict[str, Any]] = request.getfixturevalue(transaction_list_fixture)
+
+    # Получаем генератор
+    descriptions_generator: Iterator[str] = transaction_descriptions(transactions)
+
+    # Преобразуем генератор в список для сравнения
+    actual_descriptions: List[str] = list(descriptions_generator)
+
+    # Проверяем, что полученный список точно соответствует ожидаемому
+    assert actual_descriptions == expected_descriptions
+
+
