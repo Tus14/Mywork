@@ -137,15 +137,15 @@ def test_filter_by_currency_parametrized(
                 "RUB transaction",
                 "USD transaction 2",
                 "Transaction without currency info",
-                "Another RUB transaction"
+                "Another RUB transaction",
             ],
         ),
         ("empty_transactions", []),
     ],
 )
-def test_transaction_descriptions_parametrized(request: FixtureRequest,
-                                               transaction_list_fixture: str,
-                                               expected_descriptions: list[str]) -> None:
+def test_transaction_descriptions_parametrized(
+    request: FixtureRequest, transaction_list_fixture: str, expected_descriptions: list[str]
+) -> None:
     """Тестирует функцию transaction_descriptions, используя параметризацию
     для разных наборов входных данных (обычный и пустой список)."""
     # Активируем нужную фикстуру по её строковому имени с помощью request.getfixturevalue
@@ -161,3 +161,52 @@ def test_transaction_descriptions_parametrized(request: FixtureRequest,
     assert actual_descriptions == expected_descriptions
 
 
+@pytest.mark.parametrize(
+    "start_num, end_num, expected_cards",
+    [
+        # Основной вариант
+        (
+            1,
+            5,
+            [
+                "0000 0000 0000 0001",
+                "0000 0000 0000 0002",
+                "0000 0000 0000 0003",
+                "0000 0000 0000 0004",
+                "0000 0000 0000 0005",
+            ],
+        ),
+        # Диапазон, который требует дополнения нулями (проверка zfill)
+        (99, 101, ["0000 0000 0000 0099", "0000 0000 0000 0100", "0000 0000 0000 0101"]),
+        # Диапазон с большими числами (проверка форматирования)
+        (1234567890123454, 1234567890123455, ["1234 5678 9012 3454", "1234 5678 9012 3455"]),
+        # Диапазон из одного числа
+        (1000, 1000, ["0000 0000 0000 1000"]),
+    ],
+)
+def test_card_number_generation_parametrized(start_num: int, end_num: int, expected_cards: List[str]) -> None:
+    """Тестирует генерацию и форматирование номеров карт в различных диапазонах."""
+    card_generator_iterator: Iterator[str] = card_number_generator(start_num, end_num)
+    # Преобразуем итератор в список
+    actual_cards: List[str] = list(card_generator_iterator)
+    # Проверяем результат
+    assert actual_cards == expected_cards
+    # Дополнительная проверка корректности формата каждого элемента (длина и пробелы)
+    for card_num in actual_cards:
+        assert len(card_num) == 19  # 16 цифр + 3 пробела = 19 символов
+        assert card_num[4] == ' '
+        assert card_num[9] == ' '
+        assert card_num[14] == ' '
+
+
+def test_generator_behavior_termination() -> None:
+    """Проверяет, что итератор корректно завершается (вызывает StopIteration)."""
+    # map тоже является итератором и подчиняется тем же правилам
+    cards: Iterator[str] = card_number_generator(1, 2)
+
+    first_card: str = next(cards)
+    assert first_card == "0000 0000 0000 0001"
+
+    second_card: str = next(cards)
+    assert second_card == "0000 0000 0000 0002"
+    # Третий вызов next() должен вызвать исключение StopIteration
