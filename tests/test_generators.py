@@ -194,9 +194,9 @@ def test_card_number_generation_parametrized(start_num: int, end_num: int, expec
     # Дополнительная проверка корректности формата каждого элемента (длина и пробелы)
     for card_num in actual_cards:
         assert len(card_num) == 19  # 16 цифр + 3 пробела = 19 символов
-        assert card_num[4] == ' '
-        assert card_num[9] == ' '
-        assert card_num[14] == ' '
+        assert card_num[4] == " "
+        assert card_num[9] == " "
+        assert card_num[14] == " "
 
 
 def test_generator_behavior_termination() -> None:

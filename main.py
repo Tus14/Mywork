@@ -2,6 +2,7 @@ from src.masks import get_mask_account, get_mask_card_number
 from src.processing import filter_by_state, sort_by_date
 from src.widget import get_date, mask_account_card
 from src.generators import filter_by_currency, transaction_descriptions,card_number_generator
+from src.decorators import my_function, my_function_console
 
 if __name__ == "__main__":
     card_mask = get_mask_card_number("7000792289606361")
@@ -219,3 +220,10 @@ if __name__ == "__main__":
     descriptions = card_number_generator(1, 5)
     for card_number in descriptions:
         print(card_number)
+
+if __name__ == "__main__":
+    print("Вызов функции с файлом:")
+    my_function(1, 2)
+
+    print("\nВызов функции без файла (консоль):")
+    my_function_console(3.5, 4.2)
