@@ -8,9 +8,13 @@ DecoratorFunction = Callable[..., Any]
 
 
 def log(filename: Optional[str] = None) -> Callable[[DecoratorFunction], DecoratorFunction]:
+    """Декоратор, который будет автоматически логировать начало и конец выполнения функции,
+     а также ее результаты или возникшие ошибки"""
     def decorator(func: DecoratorFunction) -> DecoratorFunction:
+        """Функция-декоратор"""
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
+            """Функция-обертка"""
             start_time: float = time()
             log_message: str
             result: Any
