@@ -1,53 +1,66 @@
 from time import time, ctime
 from functools import wraps
+import os
+from typing import Callable, Optional, Any
 
 
-def log(filename=None):
-    def decorator(func):
+DecoratorFunction = Callable[..., Any]
+
+
+def log(filename: Optional[str] = None) -> Callable[[DecoratorFunction], DecoratorFunction]:
+    def decorator(func: DecoratorFunction) -> DecoratorFunction:
         @wraps(func)
-        def wrapper(*args, **kwargs):
-            start_time = time()
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            start_time: float = time()
+            log_message: str
+            result: Any
+            end_time: float
+            duration: float
             try:
                 result = func(*args, **kwargs)
                 end_time = time()
                 duration = end_time - start_time
-                log_message = f"[{ctime()}] {func.__name__} ok (duration: {duration:.4f}s)"
-
-                _write_log(log_message, filename)
-                return result
+                log_message = f"[{ctime()}] {func.__name__} ok (duration: {duration:.6f}s)"
 
             except Exception as e:
                 end_time = time()
                 duration = end_time - start_time
-                error_type = type(e).__name__
-                inputs_str = f"Inputs: {args}, {kwargs}"
-                log_message = (f"[{ctime()}] {func.__name__} error: {error_type}. {inputs_str} "
-                               f"(duration: {duration:.4f}s)")
+                error_type: str = type(e).__name__
+                inputs_str: str = f"Inputs: {args}, {kwargs}"
+                log_message = (
+                    f"[{ctime()}] {func.__name__} error: {error_type}. {inputs_str} " f"(duration: {duration:.6f}s)"
+                )
 
-                _write_log(log_message, filename)
                 raise
+            finally:
+                # Этот блок выполняется и при успешном выполнении, и при ошибке (до raise)
+                if log_message:
+                    _write_log(log_message, filename)
+            return result
 
-        return wrapper
+        return wrapper  # type: ignore [return-value]
+
     return decorator
-def _write_log(message, filename):
+
+
+def _write_log(message: str, filename: Optional[str]) -> None:
     """Вспомогательная функция для записи лога в файл или консоль."""
     if filename:
-        with open(filename, 'a', encoding='utf-8') as f:
-            f.write(message + '\n')
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, filename)
+        with open(file_path, "a", encoding="utf-8") as f:
+            f.write(message + "\n")
     else:
         print(message)
 
-@log(filename="mylog.txt")
-#Вывод в файл
-def my_function(x, y):
-    return x + y
 
-my_function(1, 2)
+@log(filename="mylog.txt")
+# Вывод в файл
+def my_function(x: int, y: int) -> int:
+    return x + y
 
 
 @log()
-#Вывод в консоль
-def my_function(x, y):
+# Вывод в консоль
+def my_function_console(x: float, y: float) -> float:
     return x + y
-
-my_function(1, 2)
