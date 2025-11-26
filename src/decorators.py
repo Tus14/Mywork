@@ -40,7 +40,7 @@ def _write_log(message, filename):
 @log(filename="mylog.txt")
 #Вывод в файл
 def my_function(x, y):
-    #return x + y
+    return x + y
 
 my_function(1, 2)
 
