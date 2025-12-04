@@ -185,18 +185,16 @@ pip install -r requirements.txt
 # Добавлен файл utils.py, 
 **def load_transactions** Загружает данные о финансовых транзакциях из JSON-файла
 ## Тестирование в test_utils.py
-- def setup_test_files
-Создает тестовые файлы перед тестами и удаляет их после
-- test_success_load_real
+- def test_load_transactions_success
 Тестирование успешной загрузки корректного JSON-файла
-- test_file_not_found_real
+- test_load_transactions_file_not_found
 Тестирование обработки исключения FileNotFoundError
-- test_empty_file_real
+- test_load_transactions_empty_file
 Тестирование обработки пустого файла
-- test_invalid_json_real
-Тестирование обработки некорректного JSON
-- test_not_a_list_real
-Тестирование обработки JSON, который не является списком
+- test_load_transactions_invalid_json
+Тестирование обработки некорректного JSON.
+- test_load_transactions_not_a_list
+Тестирование обработки JSON, который не является списком (например, словарь).
 
 # В корневую папку добавлен operations.json,
 -вложенный список

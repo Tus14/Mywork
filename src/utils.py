@@ -3,6 +3,7 @@ from json.decoder import JSONDecodeError
 from typing import List, Dict, Any
 
 
+
 def load_transactions(filepath: str) -> List[Dict[str, Any]]:
     """Загружает данные о финансовых транзакциях из JSON-файла.
     Args:
@@ -40,3 +41,4 @@ def load_transactions(filepath: str) -> List[Dict[str, Any]]:
         # Можно добавить логирование ошибки при необходимости
         print(f"Произошла непредвиденная ошибка при чтении файла: {e}")
         return []
+

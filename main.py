@@ -5,6 +5,9 @@ from src.generators import filter_by_currency, transaction_descriptions,card_num
 from src.decorators import my_function, my_function_console
 from src.utils import load_transactions
 import os
+from src.external_api import get_currency_rates, API_KEY
+
+
 
 if __name__ == "__main__":
     card_mask = get_mask_card_number("7000792289606361")
@@ -272,3 +275,13 @@ def run_tests():
 if __name__ == "__main__":
     run_tests()
 
+
+if __name__ == '__main__':
+    if API_KEY:
+        rates = get_currency_rates(base_currency='USD', symbols='RUB,EUR')
+        if rates:
+            print("Текущие курсы валют (USD -> RUB/EUR):")
+            print(f"1 USD = {rates.get('RUB')} RUB")
+            print(f"1 USD = {rates.get('EUR')} EUR")
+    else:
+        print("Невозможно выполнить запрос. API_KEY не установлен.")
