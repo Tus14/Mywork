@@ -3,6 +3,8 @@ from src.processing import filter_by_state, sort_by_date
 from src.widget import get_date, mask_account_card
 from src.generators import filter_by_currency, transaction_descriptions,card_number_generator
 from src.decorators import my_function, my_function_console
+from utils import load_transactions
+import os
 
 if __name__ == "__main__":
     card_mask = get_mask_card_number("7000792289606361")
@@ -227,3 +229,46 @@ if __name__ == "__main__":
 
     print("\nВызов функции без файла (консоль):")
     my_function_console(3.5, 4.2)
+
+
+
+def run_tests():
+    """Функция для запуска всех тестовых сценариев."""
+    # Получаем абсолютный путь к корневой директории проекта
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Определяем пути ко всем тестовым файлам
+    transactions_path = os.path.join(base_dir, 'data', 'operations.json') # Используем файл в data/
+    empty_path        = os.path.join(base_dir, 'empty.json')
+    invalid_path      = os.path.join(base_dir, 'invalid.json')
+    not_a_list_path   = os.path.join(base_dir, 'not_a_list.json')
+    non_existent_path = os.path.join(base_dir, 'non_existent_file.json') # Файл, которого нет
+
+    print(f"--- Тестирование load_transactions ---")
+
+    print("\n1. Корректный файл (operations.json):")
+    result1 = load_transactions(transactions_path)
+    # Проверка, что результат является списком и не пуст перед доступом по индексу/ключу
+    print(f"  Загружено транзакций: {len(result1)}. Первая транзакция ID: {result1[0]['id'] if result1 else 'N/A'}")
+
+    print("\n2. Пустой файл (empty.json):")
+    result2 = load_transactions(empty_path)
+    print(f"  Результат: {result2}. Тип: {type(result2)}. (Ожидается пустой список)")
+
+    print("\n3. Некорректный JSON (invalid.json):")
+    result3 = load_transactions(invalid_path)
+    print(f"  Результат: {result3}. Тип: {type(result3)}. (Ожидается пустой список)")
+
+    print("\n4. JSON, но не список (not_a_list.json):")
+    result4 = load_transactions(not_a_list_path)
+    print(f"  Результат: {result4}. Тип: {type(result4)}. (Ожидается пустой список)")
+
+    print("\n5. Несуществующий файл (non_existent_file.json):")
+    result5 = load_transactions(non_existent_path)
+    print(f"  Результат: {result5}. Тип: {type(result5)}. (Ожидается пустой список)")
+
+
+
+if __name__ == "__main__":
+    run_tests()
+
