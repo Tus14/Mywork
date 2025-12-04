@@ -1,0 +1,77 @@
+[
+  {
+    "id": 1,
+    "state": "EXECUTED",
+    "date": "2024-10-25T14:45:00.000Z",
+    "operationAmount": {
+      "amount": "100.50",
+      "currency": {
+        "name": "USD",
+        "code": "USD"
+      }
+    },
+    "description": "Перевод организации",
+    "from": "Visa Platinum 1234567890123456",
+    "to": "Счет **5566"
+  },
+  {
+    "id": 2,
+    "state": "EXECUTED",
+    "date": "2024-10-24T12:00:00.000Z",
+    "operationAmount": {
+      "amount": "5000.00",
+      "currency": {
+        "name": "RUB",
+        "code": "RUB"
+      }
+    },
+    "description": "Перевод с карты на карту",
+    "from": "Maestro 1234567890123456",
+    "to": "Счет **7788"
+  },
+  {
+    "id": 3,
+    "state": "CANCELED",
+    "date": "2024-10-23T10:30:00.000Z",
+    "operationAmount": {
+      "amount": "250.75",
+      "currency": {
+        "name": "EUR",
+        "code": "EUR"
+      }
+    },
+    "description": "Покупка продуктов",
+    "from": "Mir 1234567890123456",
+    "to": "Счет **9900"
+  },
+  {
+    "id": 4,
+    "state": "EXECUTED",
+    "date": "2024-10-22T09:15:00.000Z",
+    "operationAmount": {
+      "amount": "25.00",
+      "currency": {
+        "name": "USD",
+        "code": "USD"
+      }
+    },
+    "description": "Снятие наличных",
+    "from": null,
+    "to": "Счет **1122"
+  },
+  {
+    "id": 5,
+    "state": "EXECUTED",
+    "date": "2024-10-21T08:00:00.000Z",
+    "operationAmount": {
+      "amount": "1200.00",
+      "currency": {
+        "name": "RUB",
+        "code": "RUB"
+      }
+    },
+    "description": "Оплата мобильной связи",
+    "from": "Visa Platinum 1234567890123456",
+    "to": "Счет **3344"
+  }
+]
