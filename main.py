@@ -3,7 +3,7 @@ from src.processing import filter_by_state, sort_by_date
 from src.widget import get_date, mask_account_card
 from src.generators import filter_by_currency, transaction_descriptions,card_number_generator
 from src.decorators import my_function, my_function_console
-from utils import load_transactions
+from src.utils import load_transactions
 import os
 
 if __name__ == "__main__":

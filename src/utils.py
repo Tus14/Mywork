@@ -2,8 +2,9 @@ import json
 from json.decoder import JSONDecodeError
 from typing import List, Dict, Any
 
+
 def load_transactions(filepath: str) -> List[Dict[str, Any]]:
-    """ Загружает данные о финансовых транзакциях из JSON-файла.
+    """Загружает данные о финансовых транзакциях из JSON-файла.
     Args:
         filepath: Путь до JSON-файла.
     Returns:
@@ -11,7 +12,7 @@ def load_transactions(filepath: str) -> List[Dict[str, Any]]:
         ошибки (файл не найден, пустой, или содержит данные не в виде списка).
     """
     try:
-        with open(filepath, 'r', encoding='utf-8') as file:
+        with open(filepath, "r", encoding="utf-8") as file:
             # Чтение содержимого файла
             content = file.read()
             if not content:
