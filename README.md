@@ -45,6 +45,10 @@ pip install -r requirements.txt
 - def log
 """который будет автоматически логировать начало и конец выполнения функции, а также ее результаты
 или возникшие ошибки"""
+- def get_currency_rates
+Получает текущие курсы обмена валют (RUB и EUR) относительно базовой валюты (USD)
+- def load_transactions
+Загружает данные о финансовых транзакциях из JSON-файла
 
 # Тестирование модулей банковского приложения
 
@@ -181,6 +185,34 @@ pip install -r requirements.txt
 - def test_log_to_console_exception
 Проверяет вывод лога ошибки в консоль при возникновении исключения
 
+
+# Добавлен файл utils.py, 
+**def load_transactions** Загружает данные о финансовых транзакциях из JSON-файла
+## Тестирование в test_utils.py
+- def test_load_transactions_success
+Тестирование успешной загрузки корректного JSON-файла
+- test_load_transactions_file_not_found
+Тестирование обработки исключения FileNotFoundError
+- test_load_transactions_empty_file
+Тестирование обработки пустого файла
+- test_load_transactions_invalid_json
+Тестирование обработки некорректного JSON.
+- test_load_transactions_not_a_list
+Тестирование обработки JSON, который не является списком (например, словарь).
+
+# Добавлен файл external_api.py,
+**def get_currency_rates**
+Получает текущие курсы обмена валют (RUB и EUR) относительно базовой валюты (USD)
+## Тестирование в test_external_api.py
+- test_get_currency_rates_success
+Тест успешного получения курсов валют
+- test_get_currency_rates_api_failure
+Тест обработки ошибки, когда API возвращает success=False
+- test_get_currency_rates_network_error
+Тест обработки ошибки сети
+
+# В корневую папку добавлен operations.json,
+-вложенный список
 
 ## Документация:
 
