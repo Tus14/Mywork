@@ -204,12 +204,18 @@ pip install -r requirements.txt
 **def convert_transaction_to_rub**
 Конвертирует сумму транзакции в рубли.
 ## Тестирование в test_external_api.py
-- test_get_currency_rates_success
-Тест успешного получения курсов валют
-- test_get_currency_rates_api_failure
-Тест обработки ошибки, когда API возвращает success=False
-- test_get_currency_rates_network_error
-Тест обработки ошибки сети
+- test_convert_usd_to_rub
+Тест конвертации USD в RUB
+-test_convert_eur_to_rub
+Тест конвертации EUR в RUB
+- test_return_rub_without_conversion
+Тест возврата RUB без конвертации.
+- test_unsupported_currency
+Тест неподдерживаемой валюты
+- test_api_error_handling
+Тест обработки ошибки API
+- test_request_exception_handling
+Тест обработки исключения запроса
 
 # В корневую папку добавлен operations.json,
 -вложенный список
