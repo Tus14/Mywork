@@ -1,6 +1,7 @@
 from typing import Dict, Any
 from unittest.mock import MagicMock, patch
 import unittest
+import os
 from src.external_api import convert_transaction_to_rub
 
 
@@ -61,9 +62,9 @@ class TestCurrencyConversion(unittest.TestCase):
         with self.assertRaises(ValueError):
             convert_transaction_to_rub(transaction)
 
+    @patch("src.external_api.API_KEY", None)
     def test_missing_api_key(self) -> None:
         """Тест отсутствия API ключа."""
-        with patch.dict("os.environ", {}, clear=True):
-            transaction: Dict[str, Any] = {"operationAmount": {"amount": "100", "currency": {"code": "USD"}}}
-            with self.assertRaises(ValueError):
-                convert_transaction_to_rub(transaction)
+        transaction: Dict[str, Any] = {"operationAmount": {"amount": "100", "currency": {"code": "USD"}}}
+        with self.assertRaises(ValueError):
+            convert_transaction_to_rub(transaction)

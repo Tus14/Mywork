@@ -3,7 +3,7 @@ import requests
 from dotenv import load_dotenv
 from typing import Dict, Any, Union
 
-load_dotenv(".env")
+load_dotenv()
 API_KEY: Union[str, None] = os.getenv("API_KEY")
 BASE_URL: str = "https://api.apilayer.com/exchangerates_data/"
 
