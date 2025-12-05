@@ -53,3 +53,5 @@ def convert_transaction_to_rub(transaction: Dict[str, Any]) -> float:
         raise ValueError(f"Ошибка запроса к API: {e}")
     except ValueError as e:
         raise ValueError(f"Ошибка декодирования JSON от API: {e}")
+    except Exception as e:
+        raise ValueError(f"Неожиданная ошибка: {e}")  # Добавляем обработку общего исключения
