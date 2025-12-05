@@ -1,73 +1,66 @@
-import unittest
-from unittest.mock import patch, Mock, MagicMock
-import os
-import requests
 from typing import Dict, Optional
-from src.external_api import get_currency_rates
+from unittest.mock import MagicMock, patch
+import unittest
+from src.external_api import convert_transaction_to_rub
 
 
-class TestCurrencyRates(unittest.TestCase):
-
-    # --- ТЕСТ 1: УСПЕШНОЕ ПОЛУЧЕНИЕ ДАННЫХ ---
-    @patch.dict(os.environ, {'API_KEY': 'fake_api_key_for_testing'})
-    @patch('src.external_api.requests.get')
-    def test_get_currency_rates_success(self, mock_get: MagicMock) -> None:
-        """
-        Тест успешного получения курсов валют.
-        """
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            'success': True,
-            'base': 'USD',
-            'rates': {
-                'RUB': 90.0,
-                'EUR': 0.9
-            }
-        }
-
+class TestCurrencyConversion(unittest.TestCase):
+    @patch("src.external_api.requests.get")
+    def test_convert_usd_to_rub(self, mock_get: MagicMock) -> None:
+        """Тест конвертации USD в RUB."""
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"success": True, "result": 92.50}
+        mock_response.raise_for_status.return_value = None
         mock_get.return_value = mock_response
 
-        rates: Optional[Dict[str, float]] = get_currency_rates(base_currency='USD', symbols='RUB,EUR')
+        transaction: Dict[str, str] = {"amount": "100", "currency": "USD"}
+        result: Optional[float] = convert_transaction_to_rub(transaction)
 
+        self.assertEqual(result, 92.50)
         mock_get.assert_called_once()
-        self.assertIsNotNone(rates)
 
-        # Уточнение типа для Mypy, чтобы убрать ошибки индексации
-        assert rates is not None
-
-        self.assertEqual(rates['RUB'], 90.0)
-        self.assertEqual(rates['EUR'], 0.9)
-
-    # --- ТЕСТ 2: ОШИБКА API (success=False) ---
-    @patch.dict(os.environ, {'API_KEY': 'fake_api_key_for_testing'})
-    @patch('src.external_api.requests.get')
-    def test_get_currency_rates_api_failure(self, mock_get: MagicMock) -> None:
-        """
-        Тест обработки ошибки, когда API возвращает success=False.
-        """
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            'success': False,
-            'error': {'info': 'API limit reached'}
-        }
+    @patch("src.external_api.requests.get")
+    def test_convert_eur_to_rub(self, mock_get: MagicMock) -> None:
+        """Тест конвертации EUR в RUB."""
+        mock_response: MagicMock = MagicMock()
+        mock_response.json.return_value = {"success": True, "result": 102.30}
         mock_get.return_value = mock_response
 
-        rates: Optional[Dict[str, float]] = get_currency_rates()
+        transaction: Dict[str, str] = {"amount": "50", "currency": "EUR"}
+        result: Optional[float] = convert_transaction_to_rub(transaction)
 
-        self.assertIsNone(rates)
+        self.assertEqual(result, 102.30)
 
-    # --- ТЕСТ 3: ОШИБКА СЕТИ (Exception) ---
-    @patch.dict(os.environ, {'API_KEY': 'fake_api_key_for_testing'})
-    @patch('src.external_api.requests.get')
-    def test_get_currency_rates_network_error(self, mock_get: MagicMock) -> None:
-        """
-        Тест обработки ошибки сети (например, нет интернета).
-        """
-        # Заставляем mock_get выбросить исключение RequestException
-        mock_get.side_effect = requests.exceptions.RequestException("Network error")
+    def test_return_rub_without_conversion(self) -> None:
+        """Тест возврата RUB без конвертации."""
+        transaction: Dict[str, str] = {"amount": "200", "currency": "RUB"}
+        result: float = convert_transaction_to_rub(transaction)  # type: ignore
+        self.assertEqual(result, 200.0)
 
-        rates: Optional[Dict[str, float]] = get_currency_rates()
+    def test_unsupported_currency(self) -> None:
+        """Тест неподдерживаемой валюты."""
+        transaction: Dict[str, str] = {"amount": "75", "currency": "GBP"}
+        result: Optional[float] = convert_transaction_to_rub(transaction)
+        self.assertIsNone(result)
 
-        self.assertIsNone(rates)
+    @patch("src.external_api.requests.get")
+    def test_api_error_handling(self, mock_get: MagicMock) -> None:
+        """Тест обработки ошибки API."""
+        mock_response: MagicMock = MagicMock()
+        mock_response.json.return_value = {"success": False, "error": {"info": "Invalid API Key"}}
+        mock_get.return_value = mock_response
+
+        transaction: Dict[str, str] = {"amount": "100", "currency": "USD"}
+        result: Optional[float] = convert_transaction_to_rub(transaction)
+
+        self.assertIsNone(result)
+
+    @patch("src.external_api.requests.get")
+    def test_request_exception_handling(self, mock_get: MagicMock) -> None:
+        """Тест обработки исключения запроса."""
+        mock_get.side_effect = Exception("API unavailable")
+
+        transaction: Dict[str, str] = {"amount": "100", "currency": "USD"}
+        result: Optional[float] = convert_transaction_to_rub(transaction)
+
+        self.assertIsNone(result)
