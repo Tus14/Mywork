@@ -15,7 +15,7 @@ class TestLoadTransactionsWithMock(unittest.TestCase):
 
         mock_file_handle = mock_open(read_data=self.MOCK_VALID_JSON_DATA)
 
-        Патч src.utils.open
+        #Патч src.utils.open
         with patch("src.utils.open", mock_file_handle):
             result: List[Dict[str, Any]] = load_transactions("dummy/path/operations.json")
 
@@ -29,7 +29,7 @@ class TestLoadTransactionsWithMock(unittest.TestCase):
     def test_load_transactions_file_not_found(self) -> None:
         """Тестирование обработки исключения FileNotFoundError."""
 
-        Патч src.utils.open
+        #Патч src.utils.open
         with patch("src.utils.open", side_effect=FileNotFoundError):
             result: List[Dict[str, Any]] = load_transactions("non/existent/file.json")
 
