@@ -278,15 +278,37 @@ if __name__ == "__main__":
 
 if __name__ == '__main__':
     test_transactions = [
-        {'amount': '100', 'currency': 'USD'},  # Должно конвертироваться в рубли
-        {'amount': '50', 'currency': 'EUR'},   # Должно конвертироваться в рубли
-        {'amount': '200', 'currency': 'RUB'},  # Должно вернуть 200
-        {'amount': '75', 'currency': 'GBP'}    # Должно вернуть None (неподдерживаемая валюта)
+        {
+            "operationAmount": {
+                "amount": "100",
+                "currency": {"name": "US Dollar", "code": "USD"}
+            }
+        },
+        {
+            "operationAmount": {
+                "amount": "50",
+                "currency": {"name": "Euro", "code": "EUR"}
+            }
+        },
+        {
+            "operationAmount": {
+                "amount": "200",
+                "currency": {"name": "Russian Ruble", "code": "RUB"}
+            }
+        },
+        {
+            "operationAmount": {
+                "amount": "75",
+                "currency": {"name": "British Pound", "code": "GBP"}
+            }
+        }
     ]
 
     for transaction in test_transactions:
-        result = convert_transaction_to_rub(transaction)
-        if result is not None:
-            print(f"{transaction['amount']} {transaction['currency']} = {result:.2f} RUB")
-        else:
-            print(f"Не удалось конвертировать {transaction['amount']} {transaction['currency']}")
+        try:
+            amount = transaction["operationAmount"]["amount"]
+            currency = transaction["operationAmount"]["currency"]["code"]
+            result = convert_transaction_to_rub(transaction)
+            print(f"{amount} {currency} = {result:.2f} RUB")
+        except ValueError as e:
+            print(f"Ошибка конвертации {amount} {currency}: {str(e)}")
