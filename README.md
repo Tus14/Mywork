@@ -45,8 +45,8 @@ pip install -r requirements.txt
 - def log
 """который будет автоматически логировать начало и конец выполнения функции, а также ее результаты
 или возникшие ошибки"""
-- def get_currency_rates
-Получает текущие курсы обмена валют (RUB и EUR) относительно базовой валюты (USD)
+- def convert_transaction_to_rub
+Конвертирует сумму транзакции в рубли.
 - def load_transactions
 Загружает данные о финансовых транзакциях из JSON-файла
 
@@ -201,8 +201,8 @@ pip install -r requirements.txt
 Тестирование обработки JSON, который не является списком (например, словарь).
 
 # Добавлен файл external_api.py,
-**def get_currency_rates**
-Получает текущие курсы обмена валют (RUB и EUR) относительно базовой валюты (USD)
+**def convert_transaction_to_rub**
+Конвертирует сумму транзакции в рубли.
 ## Тестирование в test_external_api.py
 - test_get_currency_rates_success
 Тест успешного получения курсов валют
