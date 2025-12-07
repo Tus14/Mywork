@@ -312,3 +312,15 @@ if __name__ == '__main__':
             print(f"{amount} {currency} = {result:.2f} RUB")
         except ValueError as e:
             print(f"Ошибка конвертации {amount} {currency}: {str(e)}")
+
+if __name__ == '__main__':
+    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+
+    # Успешный случай
+    transactions = load_transactions(os.path.join(data_dir, "transactions.json"))
+    print(f"Загружено транзакций: {len(transactions)}")
+
+    # Ошибочные случаи
+    load_transactions(os.path.join(data_dir, "nonexistent_file.json"))
+    load_transactions(os.path.join(data_dir, "invalid_json.json"))
+    load_transactions(os.path.join(data_dir, "empty_file.json"))
