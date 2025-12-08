@@ -312,3 +312,57 @@ if __name__ == '__main__':
             print(f"{amount} {currency} = {result:.2f} RUB")
         except ValueError as e:
             print(f"Ошибка конвертации {amount} {currency}: {str(e)}")
+
+if __name__ == '__main__':
+    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+
+    # Успешный случай
+    transactions = load_transactions(os.path.join(data_dir, "transactions.json"))
+    print(f"Загружено транзакций: {len(transactions)}")
+
+    # Ошибочные случаи
+    load_transactions(os.path.join(data_dir, "nonexistent_file.json"))
+    load_transactions(os.path.join(data_dir, "invalid_json.json"))
+    load_transactions(os.path.join(data_dir, "empty_file.json"))
+
+from src.masks import get_mask_card_number, get_mask_account
+
+
+def test_masks():
+    print("Тестирование маскировки карты:")
+    # Корректные данные
+    print(get_mask_card_number("1234567890123456"))  # Стандартный номер
+    print(get_mask_card_number("1234 5678 9012 3456"))  # С пробелами
+    print(get_mask_card_number(1234567890123456))  # Числовой ввод
+
+    # Ошибочные данные (ошибка будет залогирована внутри функции)
+    try:
+        print(get_mask_card_number("123"))  # Слишком короткий номер
+    except ValueError:
+        pass  # Ошибка уже залогирована в get_mask_card_number
+
+    try:
+        print(get_mask_card_number(None))  # None вместо номера
+    except ValueError:
+        pass
+
+    print("\nТестирование маскировки счета:")
+    # Корректные данные
+    print(get_mask_account("1234567890"))  # Стандартный номер
+    print(get_mask_account(1234567890))  # Числовой ввод
+
+    # Ошибочные данные
+    try:
+        print(get_mask_account("123"))  # Слишком короткий номер
+    except ValueError:
+        pass
+
+    try:
+        print(get_mask_account([]))  # Неправильный тип данных
+    except ValueError:
+        pass
+
+
+if __name__ == "__main__":
+    test_masks()
+    print("\nПроверьте файл logs/masks.log для просмотра записанных логов")
