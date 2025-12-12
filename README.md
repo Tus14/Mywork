@@ -49,6 +49,14 @@ pip install -r requirements.txt
 Конвертирует сумму транзакции в рубли.
 - def load_transactions
 Загружает данные о финансовых транзакциях из JSON-файла
+- def convert_value
+Преобразует значение поля транзакции в нужный тип с обработкой NaN и None значений
+- def convert_transaction
+Приводит все значения транзакции к правильным типам с обработкой NaN
+- def read_csv_transaction
+Читает финансовые операции из CSV файла
+- def read_excel_transactions
+Читает финансовые операции из Excel файла
 3. Добавлено логирование в папку logs
 
 # Тестирование модулей банковского приложения
@@ -61,6 +69,7 @@ pip install -r requirements.txt
 - **generators** - функция и генераторы для обработки большого количества данных
 - **utils.py** - функция загружает данные о финансовых транзакциях из JSON-файла
 - **external_api.py** - Конвертирует сумму транзакции в рубли
+- **finance_operations** -Реализована функция для считывания финансовых операций из CSV и Excel
 
 
 ### Функции в пакете masks.py и тесты к ним
@@ -177,7 +186,7 @@ pip install -r requirements.txt
 2. Проверяет, что итератор корректно завершается (вызывает StopIteration)
 
 
-**Добавлен отчет о покрытии в HTML-формате**
+
 
 # Добавлен декоратор log
 - автоматически логировать начало и конец выполнения функции, а также ее результаты или возникшие ошибки.
@@ -223,6 +232,25 @@ pip install -r requirements.txt
 - test_missing_api_key
 Тест отсутствия API ключа
 
+# Добавлен файл finance_operations.py
+**def convert_value**
+Преобразует значение поля транзакции в нужный тип
+    с обработкой NaN и None значений
+**def read_csv_transactions**
+Читает финансовые операции из CSV файла
+**def read_excel_transactions**
+Читает финансовые операции из Excel файла
+## Тестирование в test_finance_operations.py
+- test_csv_read_valid_data
+Тест чтения корректного CSV файла.
+- test_csv_invalid_format
+ Тест чтения CSV файла с некорректным форматом.
+- test_excel_read_valid_data
+ Тест чтения корректного Excel файла.
+- test_excel_read_failure
+Тест обработки ошибок при чтении Excel файла.
+- test_csv_excel_consistency
+Проверяет что CSV и Excel возвращают одинаковую структуру
 
 # Логирование: папка logs в ней файлы masks.log utils.log
 - при запуске в файлах отражается информация о работе программы
@@ -230,6 +258,7 @@ pip install -r requirements.txt
 # В корневую папку добавлен operations.json,
 -вложенный список
 
+**Добавлен отчет о покрытии в HTML-формате**
 ## Документация:
 
 Для получения дополнительной информации обратитесь к [документации](docs/README.md).
