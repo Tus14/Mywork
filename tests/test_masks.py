@@ -5,10 +5,20 @@ from src.masks import get_mask_account, get_mask_card_number
 # Фикстуры
 @pytest.fixture
 def standard_card_number() -> str:
+    """Фикстура: возвращает стандартный 16-значный номер карты без пробелов.
+
+       Returns:
+           str: номер карты в формате '1234567890123456'
+       """
     return "1234567890123456"
 
 @pytest.fixture
 def maestro_card_number() -> str:
+    """Фикстура: возвращает 18-значный номер карты Maestro/МИР.
+
+        Returns:
+            str: номер карты в формате '123456789012345678'
+        """
     return "123456789012345678"
 
 # Тесты карт
@@ -22,6 +32,18 @@ def maestro_card_number() -> str:
     ],
 )
 def test_valid_card_masking(input_card: Union[int, str], expected: str) -> None:
+    """Тестирует корректное маскирование валидных номеров карт разных форматов.
+
+       Args:
+           input_card: Входные данные (номер карты как строка или число)
+           expected: Ожидаемый результат после маскирования
+
+       Проверяет:
+           - Стандартные 16-значные номера
+           - Номера, переданные как целые числа
+           - Номера с пробелами в форматировании
+           - 18-значные номера карт Maestro
+       """
     assert get_mask_card_number(input_card) == expected
 
 @pytest.mark.parametrize(
@@ -35,6 +57,20 @@ def test_valid_card_masking(input_card: Union[int, str], expected: str) -> None:
     ],
 )
 def test_invalid_card_masking(invalid_card: Any) -> None:
+    """Тестирует обработку невалидных/неподдерживаемых номеров карт.
+
+       Args:
+           invalid_card: Некорректный ввод для тестирования
+
+       Проверяет:
+           - Номера неподдерживаемой длины (15 и 14 цифр)
+           - Текстовые данные вместо номера
+           - Слишком короткие номера
+           - Пустую строку
+
+       Ожидает:
+           - ValueError для всех перечисленных случаев
+       """
     with pytest.raises(ValueError):
         get_mask_card_number(invalid_card)
 
