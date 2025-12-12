@@ -6,6 +6,7 @@ from src.decorators import my_function, my_function_console
 from src.utils import load_transactions
 import os
 from src.external_api import convert_transaction_to_rub
+from src.finance_operations import read_csv_transactions, read_excel_transactions
 
 
 
@@ -366,3 +367,20 @@ def test_masks():
 if __name__ == "__main__":
     test_masks()
     print("\nПроверьте файл logs/masks.log для просмотра записанных логов")
+
+
+def main():
+    # Обработка CSV
+    csv_transactions = read_csv_transactions('data/transactions.csv')
+    print("CSV Transactions:")
+    for transaction in csv_transactions[:3]:  # Первые 3 транзакции
+        print(transaction)
+
+    # Обработка Excel
+    excel_transactions = read_excel_transactions('data/transactions_excel.xlsx')
+    print("\nExcel Transactions:")
+    for transaction in excel_transactions[:3]:
+        print(transaction)
+
+if __name__ == "__main__":
+    main()
