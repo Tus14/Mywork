@@ -30,7 +30,7 @@ def format_card(number: int) -> str:
     """Вспомогательная функция для форматирования одного целого числа в номер карты."""
     padded_number = str(number).zfill(16)
     # Используем " ".join с генераторным выражением для чистоты
-    chunks = (padded_number[i : i + 4] for i in range(0, 16, 4))
+    chunks = (padded_number[i: i + 4] for i in range(0, 16, 4))
     return " ".join(chunks)
 
 
