@@ -160,7 +160,7 @@ def test_process_bank_search_missing_description() -> None:
     data: list[dict[str, Any]] = [
         {"id": 1, "description": "Перевод"},
         {"id": 2},  # нет description
-        {"id": 3, "description": "Покупка"}
+        {"id": 3, "description": "Покупка"},
     ]
     result = process_bank_search(data, "перевод")
     assert len(result) == 1
@@ -200,7 +200,7 @@ def test_process_bank_operations(
 
 def test_process_bank_operations_empty_input() -> None:
     """Тестирование подсчета с пустым списком транзакций"""
-    assert process_bank_operations([], ["перевод"]) == {}
+    assert process_bank_operations([], ["перевод"]) == {"перевод": 0}  # Ожидаем 0 вместо {}
 
 
 def test_process_bank_operations_missing_description() -> None:
@@ -208,7 +208,7 @@ def test_process_bank_operations_missing_description() -> None:
     data: list[dict[str, Any]] = [
         {"id": 1, "description": "Перевод"},
         {"id": 2},  # нет description
-        {"id": 3, "description": "Покупка"}
+        {"id": 3, "description": "Покупка"},
     ]
     result = process_bank_operations(data, ["перевод", "покупка"])
     assert result == {"перевод": 1, "покупка": 1}

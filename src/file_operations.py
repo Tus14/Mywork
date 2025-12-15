@@ -7,7 +7,6 @@ from .processing import (
 )
 
 
-
 def filter_transactions_by_status(data: List[Dict], status: str) -> List[Dict]:
     """
     Фильтрует транзакции по статусу

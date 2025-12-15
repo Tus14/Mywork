@@ -41,16 +41,17 @@ def process_bank_search(data: List[Dict], search: str) -> List[Dict]:
 
 def process_bank_operations(data: List[Dict], categories: List[str]) -> Dict[str, int]:
     """
-    Подсчитывает количество операций по заданным категориям.
+            Подсчитывает количество операций по заданным категориям.
 
-    Args:
-        data: Список словарей с банковскими операциями
-        categories: Список категорий для поиска в описаниях операций
+            Args:
+                data: Список словарей с банковскими операциями
+                categories: Список категорий для поиска в описаниях операций
 
-    Returns:
-        Словарь с количеством операций по каждой категории
-    """
-    category_counts: Counter[str] = Counter()
+            Returns:
+                Словарь с количеством операций по каждой категории
+            """
+    # Инициализируем Counter с нулями для всех категорий
+    category_counts = Counter({category: 0 for category in categories})
 
     for op in data:
         if "description" in op:
@@ -59,4 +60,4 @@ def process_bank_operations(data: List[Dict], categories: List[str]) -> Dict[str
                 if category.lower() in description:
                     category_counts[category] += 1
 
-    return dict(category_counts)
+    return dict(category_counts)  # Преобразуем в обычный dict
