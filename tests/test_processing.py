@@ -1,6 +1,6 @@
 import pytest
-
-from src.processing import filter_by_state, sort_by_date
+from typing import Any
+from src.processing import filter_by_state, sort_by_date, process_bank_search, process_bank_operations
 
 
 @pytest.fixture
@@ -119,3 +119,107 @@ def test_sort_by_date_missing_key_behavior(operations_with_missing_date_key: lis
     result_asc = sort_by_date(operations_with_missing_date_key, descending=False)
     # ID 5 должен быть первым при возрастающей сортировке
     assert result_asc[0]["id"] == 5  # Используем [0] вместо [-1]
+
+
+@pytest.fixture
+def sample_transactions() -> list[dict]:
+    """Фикстура с транзакциями для тестирования поиска по описанию"""
+    return [
+        {"id": 1, "description": "Перевод организации", "state": "EXECUTED"},
+        {"id": 2, "description": "Открытие вклада", "state": "EXECUTED"},
+        {"id": 3, "description": "Перевод с карты на карту", "state": "CANCELED"},
+        {"id": 4, "description": "Покупка в магазине", "state": "EXECUTED"},
+        {"id": 5, "description": "Перевод денег", "state": "PENDING"},
+    ]
+
+
+@pytest.mark.parametrize(
+    "search_string, expected_ids",
+    [
+        ("перевод", [1, 3, 5]),  # проверка регистронезависимости и частичного совпадения
+        ("ПЕРЕВОД", [1, 3, 5]),  # проверка верхнего регистра
+        ("орган", [1]),  # проверка частичного совпадения
+        ("вклад", [2]),  # точное совпадение
+        ("магазин", [4]),  # другое описание
+        ("несуществующее", []),  # нет совпадений
+    ],
+)
+def test_process_bank_search(sample_transactions: list[dict], search_string: str, expected_ids: list[int]) -> None:
+    """Тестирование поиска транзакций по описанию с использованием регулярных выражений"""
+    result = process_bank_search(sample_transactions, search_string)
+    assert [t["id"] for t in result] == expected_ids
+
+
+def test_process_bank_search_empty_input() -> None:
+    """Тестирование поиска с пустым списком транзакций"""
+    assert process_bank_search([], "перевод") == []
+
+
+def test_process_bank_search_missing_description() -> None:
+    """Тестирование поиска, когда у некоторых транзакций нет поля description"""
+    data: list[dict[str, Any]] = [
+        {"id": 1, "description": "Перевод"},
+        {"id": 2},  # нет description
+        {"id": 3, "description": "Покупка"}
+    ]
+    result = process_bank_search(data, "перевод")
+    assert len(result) == 1
+    assert result[0]["id"] == 1
+
+
+@pytest.fixture
+def category_transactions() -> list[dict]:
+    """Фикстура с транзакциями для тестирования подсчета по категориям"""
+    return [
+        {"id": 1, "description": "Перевод организации", "state": "EXECUTED"},
+        {"id": 2, "description": "Открытие вклада", "state": "EXECUTED"},
+        {"id": 3, "description": "Перевод с карты на карту", "state": "CANCELED"},
+        {"id": 4, "description": "Покупка в магазине", "state": "EXECUTED"},
+        {"id": 5, "description": "Перевод денег", "state": "PENDING"},
+        {"id": 6, "description": "Оплата услуг", "state": "EXECUTED"},
+    ]
+
+
+@pytest.mark.parametrize(
+    "categories, expected_counts",
+    [
+        (["перевод"], {"перевод": 3}),  # 3 транзакции с "перевод" в описании
+        (["вклад"], {"вклад": 1}),
+        (["оплата", "покупка"], {"оплата": 1, "покупка": 1}),
+        (["несуществующая"], {"несуществующая": 0}),
+        (["перевод", "вклад", "оплата"], {"перевод": 3, "вклад": 1, "оплата": 1}),
+    ],
+)
+def test_process_bank_operations(
+    category_transactions: list[dict], categories: list[str], expected_counts: dict[str, int]
+) -> None:
+    """Тестирование подсчета транзакций по категориям"""
+    result = process_bank_operations(category_transactions, categories)
+    assert result == expected_counts
+
+
+def test_process_bank_operations_empty_input() -> None:
+    """Тестирование подсчета с пустым списком транзакций"""
+    assert process_bank_operations([], ["перевод"]) == {}
+
+
+def test_process_bank_operations_missing_description() -> None:
+    """Тестирование подсчета, когда у некоторых транзакций нет поля description"""
+    data: list[dict[str, Any]] = [
+        {"id": 1, "description": "Перевод"},
+        {"id": 2},  # нет description
+        {"id": 3, "description": "Покупка"}
+    ]
+    result = process_bank_operations(data, ["перевод", "покупка"])
+    assert result == {"перевод": 1, "покупка": 1}
+
+
+def test_process_bank_operations_case_sensitivity() -> None:
+    """Тестирование регистронезависимости при подсчете категорий"""
+    data = [
+        {"id": 1, "description": "Перевод"},
+        {"id": 2, "description": "ПЕРЕВОД"},
+        {"id": 3, "description": "перевод"},
+    ]
+    result = process_bank_operations(data, ["Перевод"])
+    assert result == {"Перевод": 3}

@@ -1,5 +1,5 @@
 from src.masks import get_mask_account, get_mask_card_number
-from src.processing import filter_by_state, sort_by_date
+from src.processing import filter_by_state, sort_by_date, process_bank_search, process_bank_operations
 from src.widget import get_date, mask_account_card
 from src.generators import filter_by_currency, transaction_descriptions,card_number_generator
 from src.decorators import my_function, my_function_console
@@ -7,6 +7,8 @@ from src.utils import load_transactions
 import os
 from src.external_api import convert_transaction_to_rub
 from src.finance_operations import read_csv_transactions, read_excel_transactions
+from src.file_operations import filter_transactions_by_status, sort_transactions_by_date,
+        search_in_transactions, count_transactions_by_categories, filter_by_currency
 
 
 
