@@ -1,21 +1,18 @@
 import json
 import csv
-from typing import List, Dict
 from datetime import datetime
-import openpyxl  # Для работы с XLSX
-from src.masks import get_mask_account, get_mask_card_number
+from typing import List, Dict
+import openpyxl
 from src.processing import filter_by_state, sort_by_date, process_bank_search, process_bank_operations
 from src.widget import get_date, mask_account_card
-from src.generators import filter_by_currency, transaction_descriptions,card_number_generator
+from src.generators import transaction_descriptions, card_number_generator
 from src.decorators import my_function, my_function_console
 from src.utils import load_transactions
 import os
 from src.external_api import convert_transaction_to_rub
 from src.finance_operations import read_csv_transactions, read_excel_transactions
-from src.file_operations import (filter_transactions_by_status, sort_transactions_by_date,
-                                 search_in_transactions, count_transactions_by_categories, filter_by_currency)
-
-
+from src.file_operations import filter_by_currency
+from src.masks import get_mask_card_number, get_mask_account
 
 if __name__ == "__main__":
     card_mask = get_mask_card_number("7000792289606361")
@@ -58,7 +55,6 @@ if __name__ == "__main__":
     print(new_dict)
 
 
-
 def main() -> None:
     """Демонстрация работы функций обработки банковских операций"""
     # Тестовые данные
@@ -90,175 +86,112 @@ def main() -> None:
     empty_counts = process_bank_operations([], categories)
     print(f"Результат для пустого списка операций: {empty_counts}")
 
+
 if __name__ == "__main__":
     main()
 
 
 if __name__ == "__main__":
-    transactions = (
-        [
-            {
-                "id": 939719570,
-                "state": "EXECUTED",
-                "date": "2018-06-30T02:08:58.425572",
-                "operationAmount": {
-                    "amount": "9824.07",
-                    "currency": {
-                        "name": "USD",
-                        "code": "USD"
-                    }
-                },
-                "description": "Перевод организации",
-                "from": "Счет 75106830613657916952",
-                "to": "Счет 11776614605963066702"
-            },
-            {
-                "id": 142264268,
-                "state": "EXECUTED",
-                "date": "2019-04-04T23:20:05.206878",
-                "operationAmount": {
-                    "amount": "79114.93",
-                    "currency": {
-                        "name": "USD",
-                        "code": "USD"
-                    }
-                },
-                "description": "Перевод со счета на счет",
-                "from": "Счет 19708645243227258542",
-                "to": "Счет 75651667383060284188"
-            },
-            {
-                "id": 873106923,
-                "state": "EXECUTED",
-                "date": "2019-03-23T01:09:46.296404",
-                "operationAmount": {
-                    "amount": "43318.34",
-                    "currency": {
-                        "name": "руб.",
-                        "code": "RUB"
-                    }
-                },
-                "description": "Перевод со счета на счет",
-                "from": "Счет 44812258784861134719",
-                "to": "Счет 74489636417521191160"
-            },
-            {
-                "id": 895315941,
-                "state": "EXECUTED",
-                "date": "2018-08-19T04:27:37.904916",
-                "operationAmount": {
-                    "amount": "56883.54",
-                    "currency": {
-                        "name": "USD",
-                        "code": "USD"
-                    }
-                },
-                "description": "Перевод с карты на карту",
-                "from": "Visa Classic 6831982476737658",
-                "to": "Visa Platinum 8990922113665229"
-            },
-            {
-                "id": 594226727,
-                "state": "CANCELED",
-                "date": "2018-09-12T21:27:25.241689",
-                "operationAmount": {
-                    "amount": "67314.70",
-                    "currency": {
-                        "name": "руб.",
-                        "code": "RUB"
-                    }
-                },
-                "description": "Перевод организации",
-                "from": "Visa Platinum 1246377376343588",
-                "to": "Счет 14211924144426031657"
-            }
-        ]
-    )
+    transactions = [
+        {
+            "id": 939719570,
+            "state": "EXECUTED",
+            "date": "2018-06-30T02:08:58.425572",
+            "operationAmount": {"amount": "9824.07", "currency": {"name": "USD", "code": "USD"}},
+            "description": "Перевод организации",
+            "from": "Счет 75106830613657916952",
+            "to": "Счет 11776614605963066702",
+        },
+        {
+            "id": 142264268,
+            "state": "EXECUTED",
+            "date": "2019-04-04T23:20:05.206878",
+            "operationAmount": {"amount": "79114.93", "currency": {"name": "USD", "code": "USD"}},
+            "description": "Перевод со счета на счет",
+            "from": "Счет 19708645243227258542",
+            "to": "Счет 75651667383060284188",
+        },
+        {
+            "id": 873106923,
+            "state": "EXECUTED",
+            "date": "2019-03-23T01:09:46.296404",
+            "operationAmount": {"amount": "43318.34", "currency": {"name": "руб.", "code": "RUB"}},
+            "description": "Перевод со счета на счет",
+            "from": "Счет 44812258784861134719",
+            "to": "Счет 74489636417521191160",
+        },
+        {
+            "id": 895315941,
+            "state": "EXECUTED",
+            "date": "2018-08-19T04:27:37.904916",
+            "operationAmount": {"amount": "56883.54", "currency": {"name": "USD", "code": "USD"}},
+            "description": "Перевод с карты на карту",
+            "from": "Visa Classic 6831982476737658",
+            "to": "Visa Platinum 8990922113665229",
+        },
+        {
+            "id": 594226727,
+            "state": "CANCELED",
+            "date": "2018-09-12T21:27:25.241689",
+            "operationAmount": {"amount": "67314.70", "currency": {"name": "руб.", "code": "RUB"}},
+            "description": "Перевод организации",
+            "from": "Visa Platinum 1246377376343588",
+            "to": "Счет 14211924144426031657",
+        },
+    ]
     usd_transactions = filter_by_currency(transactions, "USD")
     for tx in usd_transactions[:2]:  # Берем первые 2 элемента
         print(tx)
 
 
 if __name__ == "__main__":
-    transactions = (
-        [
-            {
-                "id": 939719570,
-                "state": "EXECUTED",
-                "date": "2018-06-30T02:08:58.425572",
-                "operationAmount": {
-                    "amount": "9824.07",
-                    "currency": {
-                        "name": "USD",
-                        "code": "USD"
-                    }
-                },
-                "description": "Перевод организации",
-                "from": "Счет 75106830613657916952",
-                "to": "Счет 11776614605963066702"
-            },
-            {
-                "id": 142264268,
-                "state": "EXECUTED",
-                "date": "2019-04-04T23:20:05.206878",
-                "operationAmount": {
-                    "amount": "79114.93",
-                    "currency": {
-                        "name": "USD",
-                        "code": "USD"
-                    }
-                },
-                "description": "Перевод со счета на счет",
-                "from": "Счет 19708645243227258542",
-                "to": "Счет 75651667383060284188"
-            },
-            {
-                "id": 873106923,
-                "state": "EXECUTED",
-                "date": "2019-03-23T01:09:46.296404",
-                "operationAmount": {
-                    "amount": "43318.34",
-                    "currency": {
-                        "name": "руб.",
-                        "code": "RUB"
-                    }
-                },
-                "description": "Перевод со счета на счет",
-                "from": "Счет 44812258784861134719",
-                "to": "Счет 74489636417521191160"
-            },
-            {
-                "id": 895315941,
-                "state": "EXECUTED",
-                "date": "2018-08-19T04:27:37.904916",
-                "operationAmount": {
-                    "amount": "56883.54",
-                    "currency": {
-                        "name": "USD",
-                        "code": "USD"
-                    }
-                },
-                "description": "Перевод с карты на карту",
-                "from": "Visa Classic 6831982476737658",
-                "to": "Visa Platinum 8990922113665229"
-            },
-            {
-                "id": 594226727,
-                "state": "CANCELED",
-                "date": "2018-09-12T21:27:25.241689",
-                "operationAmount": {
-                    "amount": "67314.70",
-                    "currency": {
-                        "name": "руб.",
-                        "code": "RUB"
-                    }
-                },
-                "description": "Перевод организации",
-                "from": "Visa Platinum 1246377376343588",
-                "to": "Счет 14211924144426031657"
-            }
-        ]
-    )
+    transactions = [
+        {
+            "id": 939719570,
+            "state": "EXECUTED",
+            "date": "2018-06-30T02:08:58.425572",
+            "operationAmount": {"amount": "9824.07", "currency": {"name": "USD", "code": "USD"}},
+            "description": "Перевод организации",
+            "from": "Счет 75106830613657916952",
+            "to": "Счет 11776614605963066702",
+        },
+        {
+            "id": 142264268,
+            "state": "EXECUTED",
+            "date": "2019-04-04T23:20:05.206878",
+            "operationAmount": {"amount": "79114.93", "currency": {"name": "USD", "code": "USD"}},
+            "description": "Перевод со счета на счет",
+            "from": "Счет 19708645243227258542",
+            "to": "Счет 75651667383060284188",
+        },
+        {
+            "id": 873106923,
+            "state": "EXECUTED",
+            "date": "2019-03-23T01:09:46.296404",
+            "operationAmount": {"amount": "43318.34", "currency": {"name": "руб.", "code": "RUB"}},
+            "description": "Перевод со счета на счет",
+            "from": "Счет 44812258784861134719",
+            "to": "Счет 74489636417521191160",
+        },
+        {
+            "id": 895315941,
+            "state": "EXECUTED",
+            "date": "2018-08-19T04:27:37.904916",
+            "operationAmount": {"amount": "56883.54", "currency": {"name": "USD", "code": "USD"}},
+            "description": "Перевод с карты на карту",
+            "from": "Visa Classic 6831982476737658",
+            "to": "Visa Platinum 8990922113665229",
+        },
+        {
+            "id": 594226727,
+            "state": "CANCELED",
+            "date": "2018-09-12T21:27:25.241689",
+            "operationAmount": {"amount": "67314.70", "currency": {"name": "руб.", "code": "RUB"}},
+            "description": "Перевод организации",
+            "from": "Visa Platinum 1246377376343588",
+            "to": "Счет 14211924144426031657",
+        },
+    ]
 
     descriptions = transaction_descriptions(transactions)
     for _ in range(5):
@@ -278,20 +211,19 @@ if __name__ == "__main__":
     my_function_console(3.5, 4.2)
 
 
-
 def run_tests():
     """Функция для запуска всех тестовых сценариев."""
     # Получаем абсолютный путь к корневой директории проекта
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Определяем пути ко всем тестовым файлам
-    transactions_path = os.path.join(base_dir, 'data', 'operations.json') # Используем файл в data/
-    empty_path        = os.path.join(base_dir, 'empty.json')
-    invalid_path      = os.path.join(base_dir, 'invalid.json')
-    not_a_list_path   = os.path.join(base_dir, 'not_a_list.json')
-    non_existent_path = os.path.join(base_dir, 'non_existent_file.json') # Файл, которого нет
+    transactions_path = os.path.join(base_dir, "data", "operations.json")  # Используем файл в data/
+    empty_path = os.path.join(base_dir, "empty.json")
+    invalid_path = os.path.join(base_dir, "invalid.json")
+    not_a_list_path = os.path.join(base_dir, "not_a_list.json")
+    non_existent_path = os.path.join(base_dir, "non_existent_file.json")  # Файл, которого нет
 
-    print(f"--- Тестирование load_transactions ---")
+    print("Тестирование load_transactions")
 
     print("\n1. Корректный файл (operations.json):")
     result1 = load_transactions(transactions_path)
@@ -315,37 +247,16 @@ def run_tests():
     print(f"  Результат: {result5}. Тип: {type(result5)}. (Ожидается пустой список)")
 
 
-
 if __name__ == "__main__":
     run_tests()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_transactions = [
-        {
-            "operationAmount": {
-                "amount": "100",
-                "currency": {"name": "US Dollar", "code": "USD"}
-            }
-        },
-        {
-            "operationAmount": {
-                "amount": "50",
-                "currency": {"name": "Euro", "code": "EUR"}
-            }
-        },
-        {
-            "operationAmount": {
-                "amount": "200",
-                "currency": {"name": "Russian Ruble", "code": "RUB"}
-            }
-        },
-        {
-            "operationAmount": {
-                "amount": "75",
-                "currency": {"name": "British Pound", "code": "GBP"}
-            }
-        }
+        {"operationAmount": {"amount": "100", "currency": {"name": "US Dollar", "code": "USD"}}},
+        {"operationAmount": {"amount": "50", "currency": {"name": "Euro", "code": "EUR"}}},
+        {"operationAmount": {"amount": "200", "currency": {"name": "Russian Ruble", "code": "RUB"}}},
+        {"operationAmount": {"amount": "75", "currency": {"name": "British Pound", "code": "GBP"}}},
     ]
 
     for transaction in test_transactions:
@@ -357,8 +268,8 @@ if __name__ == '__main__':
         except ValueError as e:
             print(f"Ошибка конвертации {amount} {currency}: {str(e)}")
 
-if __name__ == '__main__':
-    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+if __name__ == "__main__":
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
 
     # Успешный случай
     transactions = load_transactions(os.path.join(data_dir, "transactions.json"))
@@ -368,8 +279,6 @@ if __name__ == '__main__':
     load_transactions(os.path.join(data_dir, "nonexistent_file.json"))
     load_transactions(os.path.join(data_dir, "invalid_json.json"))
     load_transactions(os.path.join(data_dir, "empty_file.json"))
-
-from src.masks import get_mask_card_number, get_mask_account
 
 
 def test_masks():
@@ -414,26 +323,20 @@ if __name__ == "__main__":
 
 def main():
     # Обработка CSV
-    csv_transactions = read_csv_transactions('data/transactions.csv')
+    csv_transactions = read_csv_transactions("data/transactions.csv")
     print("CSV Transactions:")
     for transaction in csv_transactions[:3]:  # Первые 3 транзакции
         print(transaction)
 
     # Обработка Excel
-    excel_transactions = read_excel_transactions('data/transactions_excel.xlsx')
+    excel_transactions = read_excel_transactions("data/transactions_excel.xlsx")
     print("\nExcel Transactions:")
     for transaction in excel_transactions[:3]:
         print(transaction)
 
+
 if __name__ == "__main__":
     main()
-
-import json
-import csv
-import os
-from datetime import datetime
-from typing import List, Dict
-import openpyxl
 
 
 class TransactionProcessor:
@@ -442,14 +345,14 @@ class TransactionProcessor:
         self.DATA_DIR = os.path.join(self.BASE_DIR, "data")
         self.JSON_PATH = os.path.join(self.DATA_DIR, "operations.json")
         self.CSV_PATH = os.path.join(self.DATA_DIR, "transactions.csv")
-        self.XLSX_PATH = os.path.join(self.DATA_DIR, "transactions.xlsx")
+        self.XLSX_PATH = os.path.join(self.DATA_DIR, "transactions_excel.xlsx")
         self.VALID_STATUSES = ["EXECUTED", "CANCELED", "PENDING"]
         self.AVAILABLE_CATEGORIES = {
-            'перевод': ['перевод', 'перевести', 'transfer', 'transaction'],
-            'покупка': ['покупка', 'покупки', 'buy', 'purchase'],
-            'оплата': ['оплата', 'платеж', 'payment'],
-            'карта': ['карта', 'карты', 'card'],
-            'счет': ['счет', 'account']
+            "перевод": ["перевод", "перевести", "transfer", "transaction"],
+            "покупка": ["покупка", "покупки", "buy", "purchase"],
+            "оплата": ["оплата", "платеж", "payment"],
+            "карта": ["карта", "карты", "card"],
+            "счет": ["счет", "account"],
         }
 
     def main(self):
@@ -461,11 +364,7 @@ class TransactionProcessor:
 
         file_choice = input("\nПользователь: ").strip()
 
-        loader_map = {
-            '1': self.load_json_file,
-            '2': self.load_csv_file,
-            '3': self.load_xlsx_file
-        }
+        loader_map = {"1": self.load_json_file, "2": self.load_csv_file, "3": self.load_xlsx_file}
 
         if file_choice in loader_map:
             transactions = loader_map[file_choice]()
@@ -483,7 +382,7 @@ class TransactionProcessor:
                 print(f"Программа: Файл {self.JSON_PATH} не найден!")
                 return []
 
-            with open(self.JSON_PATH, 'r', encoding='utf-8') as f:
+            with open(self.JSON_PATH, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if isinstance(data, dict):
                     return [self._normalize_transaction(data)]
@@ -500,8 +399,8 @@ class TransactionProcessor:
                 print(f"Программа: Файл {self.CSV_PATH} не найден!")
                 return []
 
-            with open(self.CSV_PATH, 'r', encoding='utf-8') as f:
-                reader = csv.DictReader(f, delimiter=';')
+            with open(self.CSV_PATH, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f, delimiter=";")
                 return [self._normalize_transaction(row) for row in reader]
 
         except Exception as e:
@@ -538,45 +437,42 @@ class TransactionProcessor:
         """Нормализация названий столбцов"""
         if not header:
             return ""
-        header = str(header).lower().replace(' ', '_')
-        if header in ['currencyname', 'currency_name']:
-            return 'currency_name'
-        elif header in ['currencycode', 'currency_code']:
-            return 'currency_code'
+        header = str(header).lower().replace(" ", "_")
+        if header in ["currencyname", "currency_name"]:
+            return "currency_name"
+        elif header in ["currencycode", "currency_code"]:
+            return "currency_code"
         return header
 
     def _normalize_transaction(self, transaction: Dict) -> Dict:
         """Нормализация структуры транзакции"""
         # Для CSV/XLSX
-        if 'currency_code' in transaction or 'currency_name' in transaction:
+        if "currency_code" in transaction or "currency_name" in transaction:
             return {
-                'state': str(transaction.get('state', '')).upper(),
-                'date': transaction.get('date'),
-                'operationAmount': {
-                    'amount': str(transaction.get('amount', '')),
-                    'currency': {
-                        'name': transaction.get('currency_name'),
-                        'code': transaction.get('currency_code')
-                    }
+                "state": str(transaction.get("state", "")).upper(),
+                "date": transaction.get("date"),
+                "operationAmount": {
+                    "amount": str(transaction.get("amount", "")),
+                    "currency": {"name": transaction.get("currency_name"), "code": transaction.get("currency_code")},
                 },
-                'description': transaction.get('description'),
-                'from': transaction.get('from'),
-                'to': transaction.get('to')
+                "description": transaction.get("description"),
+                "from": transaction.get("from"),
+                "to": transaction.get("to"),
             }
         # Для JSON
         return {
-            'state': str(transaction.get('state', '')).upper(),
-            'date': transaction.get('date'),
-            'operationAmount': {
-                'amount': str(transaction.get('operationAmount', {}).get('amount', '')),
-                'currency': {
-                    'name': transaction.get('operationAmount', {}).get('currency', {}).get('name'),
-                    'code': transaction.get('operationAmount', {}).get('currency', {}).get('code')
-                }
+            "state": str(transaction.get("state", "")).upper(),
+            "date": transaction.get("date"),
+            "operationAmount": {
+                "amount": str(transaction.get("operationAmount", {}).get("amount", "")),
+                "currency": {
+                    "name": transaction.get("operationAmount", {}).get("currency", {}).get("name"),
+                    "code": transaction.get("operationAmount", {}).get("currency", {}).get("code"),
+                },
             },
-            'description': transaction.get('description'),
-            'from': transaction.get('from'),
-            'to': transaction.get('to')
+            "description": transaction.get("description"),
+            "from": transaction.get("from"),
+            "to": transaction.get("to"),
         }
 
     def process_transactions(self, transactions: List[Dict]):
@@ -587,7 +483,7 @@ class TransactionProcessor:
         print(f"\nПрограмма: Операции отфильтрованы по статусу '{status}'")
 
         if not transactions:
-            print("Программа: Не найдено транзакций с выбранным статусом.")
+            print("Программа: Не найдено ни одной транзакции с выбранным статусом.")
             return
 
         # Сортировка
@@ -602,10 +498,16 @@ class TransactionProcessor:
         # Фильтр по валюте
         if self._ask_yes_no("\nПрограмма: Выводить только рублевые транзакции? Да/Нет"):
             transactions = [t for t in transactions if self._get_currency(t) == "RUB"]
+            if not transactions:
+                print("\nПрограмма: Не найдено рублевых транзакций.")
+                return
 
         # Фильтр по категории
         if self._ask_yes_no("\nПрограмма: Фильтровать по категории транзакций? Да/Нет"):
             self._filter_by_category(transactions)
+            if not transactions:
+                print("\nПрограмма: Не найдено транзакций по выбранной категории.")
+                return
 
         # Вывод результатов
         self._print_results(transactions)
@@ -629,9 +531,7 @@ class TransactionProcessor:
                 print("Программа: Категория не найдена. Попробуйте снова.")
 
         keywords = self.AVAILABLE_CATEGORIES[selected_category]
-        transactions[:] = [t for t in transactions if any(
-            kw in t.get("description", "").lower() for kw in keywords
-        )]
+        transactions[:] = [t for t in transactions if any(kw in t.get("description", "").lower() for kw in keywords)]
         print(f"\nПрограмма: Отфильтровано по категории '{selected_category.capitalize()}'")
 
     def _get_currency(self, transaction: Dict) -> str:
@@ -687,7 +587,7 @@ class TransactionProcessor:
         """Форматирование даты"""
         try:
             return datetime.fromisoformat(date_str.replace("Z", "")).strftime("%d.%m.%Y")
-        except:
+        except ValueError:
             return date_str
 
     def _mask_account(self, account: str) -> str:
