@@ -1,7 +1,6 @@
 from typing import Dict, Any
 from unittest.mock import MagicMock, patch
 import unittest
-import os
 from src.external_api import convert_transaction_to_rub
 
 
